@@ -1,0 +1,54 @@
+-- Create the ScreenGui inside CoreGui to cover everything
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TempBlur"
+screenGui.Parent = game:GetService("CoreGui")  -- Parent to CoreGui to cover everything
+
+-- Create a Frame to cover the entire screen with black
+local blackFrame = Instance.new("Frame")
+blackFrame.Name = "BlackScreen"
+blackFrame.Size = UDim2.new(1, 0, 1, 0)  -- Full screen size
+blackFrame.Position = UDim2.new(0, 0, 0, 0)
+blackFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)  -- Black background
+blackFrame.BackgroundTransparency = 0  -- Opaque black (full screen black)
+blackFrame.ZIndex = 9999  -- Ensure the frame is on top of all other UI elements
+blackFrame.Parent = screenGui
+
+-- Create the blur effect
+local blurEffect = Instance.new("BlurEffect")
+blurEffect.Size = 10  -- Set the blur strength
+blurEffect.Parent = game.Lighting
+
+-- Create a loading message label
+local loadingLabel = Instance.new("TextLabel")
+loadingLabel.Size = UDim2.new(0, 300, 0, 50)  -- Size of the text box
+loadingLabel.Position = UDim2.new(0.5, -150, 0.5, -25)  -- Center it on screen
+loadingLabel.Text = "Loading..."
+loadingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+loadingLabel.TextSize = 24
+loadingLabel.BackgroundTransparency = 1  -- No background
+loadingLabel.TextStrokeTransparency = 0.8  -- Stroke to make text more readable
+loadingLabel.ZIndex = 10000  -- Make sure the label is above everything else
+loadingLabel.Parent = blackFrame
+
+-- Hide all PlayerGui UI elements by making them invisible
+local playerGui = player:WaitForChild("PlayerGui")
+for _, guiObject in pairs(playerGui:GetChildren()) do
+    if guiObject:IsA("GuiObject") then
+        guiObject.Visible = false  -- Hide the GUI object entirely
+    end
+end
+
+-- Use delay to remove the black screen, blur effect, and loading message after 4 seconds
+delay(4, function()
+    -- Restore PlayerGui UI visibility
+    for _, guiObject in pairs(playerGui:GetChildren()) do
+        if guiObject:IsA("GuiObject") then
+            guiObject.Visible = true  -- Make the GUI object visible again
+        end
+    end
+
+    -- Remove the black screen, blur effect, and loading message after 4 seconds
+    blackFrame:Destroy()
+    blurEffect:Destroy()
+end)
